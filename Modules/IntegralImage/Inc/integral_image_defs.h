@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+// #define FILL_LINE void (*fill_line)(void)
+
 typedef struct
 {
 	uint8_t width;

@@ -4,7 +4,7 @@
 
 // Static variables ----------------------------------------------------------
 
-static uint16_t image[6][6] = {
+static uint8_t image[6][6] = {
   { 3, 1, 4, 1, 5, 9 },
   { 2, 6, 5, 3, 5, 8 },
   { 9, 7, 9, 3, 2, 3 },
@@ -14,6 +14,14 @@ static uint16_t image[6][6] = {
 };
 
 // Static functions ----------------------------------------------------------
+
+static void fill_integral_image(
+  void (*set_data)(const uint8_t *const),
+  integral_image_size image_size
+)
+{
+  set_data((uint8_t *)image);
+}
 
 // Tests ---------------------------------------------------------------------
 
@@ -27,6 +35,8 @@ TEST_SETUP(integral_image)
       .height = 6U
     }
   );
+
+  integral_image_set(fill_integral_image);
 }
 
 TEST_TEAR_DOWN(integral_image)
@@ -34,20 +44,35 @@ TEST_TEAR_DOWN(integral_image)
   integral_image_destroy();
 }
 
+TEST(integral_image, set_image_is_ok)
+{
+  integral_image_rectangle_position first_column = {
+    .top_left_corner = { .x = 0, .y = 0 },
+    .bottom_right_corner = { .x = 0, .y = 7 }
+  };
+  integral_image_rectangle_position first_row = {
+    .top_left_corner = { .x = 0, .y = 0 },
+    .bottom_right_corner = { .x = 0, .y = 7 }
+  };
+
+  TEST_ASSERT_EQUAL(0, integral_image_get_rectangle(&first_column));
+  TEST_ASSERT_EQUAL(0, integral_image_get_rectangle(&first_row));
+}
+
 TEST(integral_image, total_summarize_is_ok)
 {
   integral_image_rectangle_position pos = {
     .top_left_corner = {
-      .x = 0,
-      .y = 0
+      .x = 1,
+      .y = 1
     },
     .bottom_right_corner = {
-      .x = 5,
-      .y = 5
+      .x = 6,
+      .y = 6
     }
   };
 
-  integral_image_calculate((uint16_t*)image);
+  integral_image_calculate();
 
   TEST_ASSERT_EQUAL(119, integral_image_get_rectangle(&pos));
 }
@@ -56,16 +81,16 @@ TEST(integral_image, left_top_part_summarize_is_ok)
 {
   integral_image_rectangle_position pos = {
     .top_left_corner = {
-      .x = 0,
-      .y = 0
+      .x = 1,
+      .y = 1
     },
     .bottom_right_corner = {
-      .x = 2,
-      .y = 2
+      .x = 3,
+      .y = 3
     }
   };
 
-  integral_image_calculate((uint16_t*)image);
+  integral_image_calculate();
 
   TEST_ASSERT_EQUAL(27, integral_image_get_rectangle(&pos));
 }
@@ -74,16 +99,16 @@ TEST(integral_image, right_top_part_summarize_is_ok)
 {
   integral_image_rectangle_position pos = {
     .top_left_corner = {
-      .x = 3,
-      .y = 0
+      .x = 4,
+      .y = 1
     },
     .bottom_right_corner = {
-      .x = 5,
-      .y = 2
+      .x = 6,
+      .y = 3
     }
   };
 
-  integral_image_calculate((uint16_t*)image);
+  integral_image_calculate();
 
   TEST_ASSERT_EQUAL(18, integral_image_get_rectangle(&pos));
 }
@@ -92,16 +117,16 @@ TEST(integral_image, left_bottom_part_summarize_is_ok)
 {
   integral_image_rectangle_position pos = {
     .top_left_corner = {
-      .x = 0,
-      .y = 3
+      .x = 1,
+      .y = 4
     },
     .bottom_right_corner = {
-      .x = 2,
-      .y = 5
+      .x = 3,
+      .y = 6
     }
   };
 
-  integral_image_calculate((uint16_t*)image);
+  integral_image_calculate();
 
   TEST_ASSERT_EQUAL(16, integral_image_get_rectangle(&pos));
 }
@@ -110,34 +135,16 @@ TEST(integral_image, right_bottom_part_summarize_is_ok)
 {
   integral_image_rectangle_position pos = {
     .top_left_corner = {
-      .x = 3,
-      .y = 3
+      .x = 4,
+      .y = 4
     },
     .bottom_right_corner = {
-      .x = 5,
-      .y = 5
+      .x = 6,
+      .y = 6
     }
   };
 
-  integral_image_calculate((uint16_t*)image);
+  integral_image_calculate();
 
   TEST_ASSERT_EQUAL(25, integral_image_get_rectangle(&pos));
-}
-
-TEST(integral_image, total_summarize_of_squares_is_ok)
-{
-  integral_image_rectangle_position pos = {
-    .top_left_corner = {
-      .x = 0,
-      .y = 0
-    },
-    .bottom_right_corner = {
-      .x = 5,
-      .y = 5
-    }
-  };
-
-  integral_image_calculate((uint16_t*)image);
-
-  TEST_ASSERT_EQUAL(711, integral_image_get_rectangle(&pos));
 }

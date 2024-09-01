@@ -2,11 +2,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 // Static variables ----------------------------------------------------------
 
 static uint16_t *integral_image = NULL;
-static uint16_t *integral_image_of_squares = NULL;
 static integral_image_size image_size = { 0 };
 
 // Defines -------------------------------------------------------------------
@@ -16,34 +16,68 @@ static integral_image_size image_size = { 0 };
 
 // Static prototypes ---------------------------------------------------------
 
-static void integral_image_calculate_initial_column_and_line(
-	const uint16_t* const image
-);
-static void integral_image_calculate_top_line(const uint16_t* const image);
-static void integral_image_calculate_start_column(
-	const uint16_t* const image
-);
-static void integral_image_calculate_other_elements(
-	const uint16_t* const image
-);
-static const uint16_t integral_image_calculate_rectangle(
-  const uint16_t *const internal_integral_image,
-	const integral_image_rectangle_position* const rectangle
-);
+static void integral_image_set_data(const uint8_t *const image_data);
+static void integral_image_calculate_initial_column_and_line(void);
+static void integral_image_calculate_top_line(void);
+static void integral_image_calculate_start_column(void);
+static void integral_image_calculate_other_elements(void);
 
 // Implementations -----------------------------------------------------------
 
 void integral_image_create(integral_image_size size)
 {
-  image_size = size;
+  image_size = (integral_image_size) {
+    .height = size.height + 1,
+    .width = size.width + 1
+  };
   integral_image = (uint16_t*)calloc(
     image_size.width * image_size.height,
     sizeof(uint16_t)
   );
-  integral_image_of_squares = (uint16_t*)calloc(
-    image_size.width * image_size.height,
-    sizeof(uint16_t)
+}
+
+void integral_image_set(
+  void (*fill_integral_image)(
+    void (*set_data)(const uint8_t *const),
+    integral_image_size
+  )
+)
+{
+  fill_integral_image(
+    integral_image_set_data,
+    (integral_image_size) {
+      .width = image_size.width - 1,
+      .height = image_size.height - 1
+    }
   );
+}
+
+static void integral_image_set_data(const uint8_t *const image_data)
+{
+  integral_image_size image_data_size = (integral_image_size){
+    .width = image_size.width - 1,
+    .height = image_size.height - 1
+  };
+
+  // for (uint16_t y = 0; y < image_size.height; y++)
+	// {
+  //   //uint8_t y_offset = y * image_data_line_width;
+
+	// 	memcpy(
+  //     integral_image + 1 + (1 + y) * image_size.height,
+  //     image_data + y * image_data_line_width,
+  //     image_data_line_width
+  //   );
+	// }
+
+  for (uint16_t y = 0; y < image_data_size.height; y++)
+  {
+    for (uint16_t x = 0; x < image_data_size.height; x++)
+    {
+      integral_image[(x + 1) + (y + 1) * image_size.height] =
+        image_data[x + y * image_data_size.width];
+    }
+  }
 }
 
 void integral_image_destroy(void)
@@ -54,117 +88,69 @@ void integral_image_destroy(void)
   image_size = (integral_image_size){ 0 };
 }
 
-void integral_image_calculate(const uint16_t* const image)
+void integral_image_calculate(void)
 {
-	integral_image_calculate_initial_column_and_line(image);
-	integral_image_calculate_other_elements(image);
+	integral_image_calculate_initial_column_and_line();
+	integral_image_calculate_other_elements();
 }
 
-static void integral_image_calculate_initial_column_and_line(
-	const uint16_t* const image
-)
+static void integral_image_calculate_initial_column_and_line()
 {
-	GET_PIXEL(integral_image, 0, 0) = GET_PIXEL(image, 0, 0);
-  GET_PIXEL(integral_image_of_squares, 0, 0) = 
-    powl(GET_PIXEL(image, 0, 0), 2U);
-
-	integral_image_calculate_top_line(image);
-	integral_image_calculate_start_column(image);
+	integral_image_calculate_top_line();
+	integral_image_calculate_start_column();
 }
 
-static void integral_image_calculate_top_line(const uint16_t* const image)
+static void integral_image_calculate_top_line()
 {
-	for (uint16_t x = 1; x < image_size.width; x++)
+	for (uint16_t x = 0; x < image_size.width; x++)
 	{
-		GET_PIXEL(integral_image, x, 0) = GET_PIXEL(image, x, 0) +
-			GET_PIXEL(integral_image, x - 1, 0);
-
-    GET_PIXEL(integral_image_of_squares, x, 0) =
-      powl(GET_PIXEL(image, x, 0), 2U) +
-			GET_PIXEL(integral_image_of_squares, x - 1, 0);
+		GET_PIXEL(integral_image, x, 0) = 0U;
 	}
 }
 
-static void integral_image_calculate_start_column(const uint16_t* const image)
+static void integral_image_calculate_start_column()
 {
 	for (uint16_t y = 1; y < image_size.height; y++)
 	{
-		GET_PIXEL(integral_image, 0, y) = GET_PIXEL(image, 0, y) +
-			GET_PIXEL(integral_image, 0, y - 1);
-
-    GET_PIXEL(integral_image_of_squares, 0, y) = 
-      powl(GET_PIXEL(image, 0, y), 2U) +
-			GET_PIXEL(integral_image_of_squares, 0, y - 1);
+		GET_PIXEL(integral_image, 0, y) = 0U;
 	}
 }
 
-static void integral_image_calculate_other_elements(
-	const uint16_t* const image
-)
+static void integral_image_calculate_other_elements()
 {
 	for (uint16_t x = 1; x < image_size.width; x++)
 	{
 		for (uint16_t y = 1; y < image_size.height; y++)
 		{
-			GET_PIXEL(integral_image, x, y) = 
-        (GET_PIXEL(image, x, y) +
-				GET_PIXEL(integral_image, x - 1, y) +
-        GET_PIXEL(integral_image, x, y - 1)) -
+			GET_PIXEL(integral_image, x, y) +=
+        GET_PIXEL(integral_image, x - 1, y) +
+        GET_PIXEL(integral_image, x, y - 1) -
 				GET_PIXEL(integral_image, x - 1, y - 1);
-
-      GET_PIXEL(integral_image_of_squares, x, y) = 
-        (powl(GET_PIXEL(image, x, y), 2U) +
-				GET_PIXEL(integral_image_of_squares, x - 1, y) +
-        GET_PIXEL(integral_image_of_squares, x, y - 1)) -
-				GET_PIXEL(integral_image_of_squares, x - 1, y - 1);
 		}
 	}
-}
-
-const uint16_t* const integral_image_get()
-{
-	return integral_image;
 }
 
 const uint16_t integral_image_get_rectangle(
 	integral_image_rectangle_position* const rectangle
 )
 {
-	return integral_image_calculate_rectangle(integral_image, rectangle);
-}
-
-const uint16_t integral_image_get_rectangle_of_squares(
-	integral_image_rectangle_position *const rectangle
-)
-{
-  return integral_image_calculate_rectangle(
-    integral_image_of_squares,
-    rectangle
-  );
-}
-
-static const uint16_t integral_image_calculate_rectangle(
-  const uint16_t *const internal_integral_image,
-	const integral_image_rectangle_position* const rectangle
-)
-{
-  uint16_t top_left_corner = GET_PIXEL(
-		internal_integral_image,
+	uint16_t top_left_corner = GET_PIXEL(
+		integral_image,
 		rectangle->top_left_corner.x,
 		rectangle->top_left_corner.y
 	);
 	uint16_t bottom_right_corner = GET_PIXEL(
-		internal_integral_image,
+		integral_image,
 		rectangle->bottom_right_corner.x,
 		rectangle->bottom_right_corner.y
 	);
 	uint16_t top_right_corner = GET_PIXEL(
-		internal_integral_image,
+		integral_image,
 		rectangle->bottom_right_corner.x,
 		rectangle->top_left_corner.y
 	);
 	uint16_t bottom_left_corner = GET_PIXEL(
-		internal_integral_image,
+		integral_image,
 		rectangle->top_left_corner.x,
 		rectangle->bottom_right_corner.y
 	);
