@@ -17,9 +17,9 @@ static uint8_t stages_amount_in_source = 0;
 
 // Implementations -----------------------------------------------------------
 
-stage *const binary_stage_create(uint8_t* source, uint8_t stages_amount)
+const stage *binary_stage_create(uint8_t *const source, uint8_t stages_amount)
 {
-	binary_source = source;
+	binary_source = (uint8_t *)source;
 	stages_amount_in_source = stages_amount;
 
 	for (uint8_t i = 0; i < stages_amount; i++)
@@ -32,7 +32,7 @@ stage *const binary_stage_create(uint8_t* source, uint8_t stages_amount)
 		);
 	}
 
-	return (stage*)binary_source;
+	return (const stage*)binary_source;
 }
 
 void binary_stage_destroy()
@@ -48,20 +48,4 @@ stage* const binary_stage_get(uint8_t index)
 	uint8_t* current_stage_in_source = binary_source + (index * sizeof(stage));
 
 	return (stage*)current_stage_in_source;
-}
-
-lbp_feature* const binary_stage_get_features(
-	stage* const base_stage,
-	uint16_t index
-)
-{
-	if (index >= base_stage->features_amount)
-		return NULL;
-
-	lbp_feature* current_features = (lbp_feature*)GET_ABSOLUTE_ADDRESS(
-		binary_source,
-		base_stage->features
-	);
-
-	return current_features + index;
 }

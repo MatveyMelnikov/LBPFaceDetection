@@ -7,6 +7,7 @@ void unity_config_put_c(uint8_t c);
 static void run_all_tests()
 {
 	RUN_TEST_GROUP(integral_image);
+  RUN_TEST_GROUP(binary_stage_parser);
 }
 
 int main(int argc, char *argv[])

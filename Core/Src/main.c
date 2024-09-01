@@ -23,7 +23,7 @@ int main()
 
 	fclose(file);
 
-	stage *stages = binary_stage_create(
+	const stage *stages = binary_stage_create(
     binary_source,
     DEFAULT_BINARY_DATA_STAGES_AMOUNT
   );
