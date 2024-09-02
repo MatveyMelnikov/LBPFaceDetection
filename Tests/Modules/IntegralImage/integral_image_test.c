@@ -2,9 +2,15 @@
 #include "integral_image.h"
 #include <string.h>
 
+// Defines -------------------------------------------------------------------
+
+enum {
+  IMAGE_SIZE = 6U
+};
+
 // Static variables ----------------------------------------------------------
 
-static uint8_t image[6][6] = {
+static uint8_t image[IMAGE_SIZE][IMAGE_SIZE] = {
   { 3, 1, 4, 1, 5, 9 },
   { 2, 6, 5, 3, 5, 8 },
   { 9, 7, 9, 3, 2, 3 },
@@ -16,11 +22,19 @@ static uint8_t image[6][6] = {
 // Static functions ----------------------------------------------------------
 
 static void fill_integral_image(
-  void (*set_data)(const uint8_t *const),
+  FILL_LINE_FUNCTOR,
   integral_image_size image_size
 )
 {
-  set_data((uint8_t *)image);
+  uint16_t convertion_buffer[IMAGE_SIZE];
+
+  for (uint8_t y = 0; y < image_size.height; y++)
+  {
+    for (uint8_t x = 0; x < image_size.width; x++)
+      convertion_buffer[x] = image[y][x];
+
+    fill_line((uint16_t*)convertion_buffer, y);
+  }
 }
 
 // Tests ---------------------------------------------------------------------

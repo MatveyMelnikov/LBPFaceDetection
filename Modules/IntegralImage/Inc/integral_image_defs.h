@@ -3,7 +3,15 @@
 
 #include <stdint.h>
 
-// #define FILL_LINE void (*fill_line)(void)
+// args: image data line (grayscale pixels), line index
+#define FILL_LINE_FUNCTOR void (*fill_line)( \
+    const uint16_t *const, \
+    const uint8_t \
+  )
+#define FILL_IMAGE_FUNCTOR void (*fill_integral_image_line)( \
+    FILL_LINE_FUNCTOR, \
+    integral_image_size \
+  )
 
 typedef struct
 {

@@ -8,6 +8,7 @@
 
 static uint16_t *integral_image = NULL;
 static integral_image_size image_size = { 0 };
+static integral_image_size source_image_size = { 0 };
 
 // Defines -------------------------------------------------------------------
 
@@ -16,7 +17,10 @@ static integral_image_size image_size = { 0 };
 
 // Static prototypes ---------------------------------------------------------
 
-static void integral_image_set_data(const uint8_t *const image_data);
+static void integral_image_fill_line(
+  const uint16_t *const image_data,
+  const uint8_t line_index
+);
 static void integral_image_calculate_initial_column_and_line(void);
 static void integral_image_calculate_top_line(void);
 static void integral_image_calculate_start_column(void);
@@ -30,54 +34,30 @@ void integral_image_create(integral_image_size size)
     .height = size.height + 1,
     .width = size.width + 1
   };
-  integral_image = (uint16_t*)calloc(
-    image_size.width * image_size.height,
-    sizeof(uint16_t)
+  source_image_size = size;
+
+  integral_image = (uint16_t*)malloc(
+    (image_size.width * image_size.height) * sizeof(uint16_t)
   );
 }
 
-void integral_image_set(
-  void (*fill_integral_image)(
-    void (*set_data)(const uint8_t *const),
-    integral_image_size
-  )
+void integral_image_set(FILL_IMAGE_FUNCTOR)
+{
+  fill_integral_image_line(integral_image_fill_line, source_image_size);
+}
+
+static void integral_image_fill_line(
+  const uint16_t *const image_data,
+  const uint8_t line_index
 )
 {
-  fill_integral_image(
-    integral_image_set_data,
-    (integral_image_size) {
-      .width = image_size.width - 1,
-      .height = image_size.height - 1
-    }
+  memcpy(
+    integral_image + 1 + ((line_index + 1) * image_size.height),
+    image_data,
+    source_image_size.width * sizeof(uint16_t)
   );
-}
 
-static void integral_image_set_data(const uint8_t *const image_data)
-{
-  integral_image_size image_data_size = (integral_image_size){
-    .width = image_size.width - 1,
-    .height = image_size.height - 1
-  };
-
-  // for (uint16_t y = 0; y < image_size.height; y++)
-	// {
-  //   //uint8_t y_offset = y * image_data_line_width;
-
-	// 	memcpy(
-  //     integral_image + 1 + (1 + y) * image_size.height,
-  //     image_data + y * image_data_line_width,
-  //     image_data_line_width
-  //   );
-	// }
-
-  for (uint16_t y = 0; y < image_data_size.height; y++)
-  {
-    for (uint16_t x = 0; x < image_data_size.height; x++)
-    {
-      integral_image[(x + 1) + (y + 1) * image_size.height] =
-        image_data[x + y * image_data_size.width];
-    }
-  }
+  __asm("nop");
 }
 
 void integral_image_destroy(void)
