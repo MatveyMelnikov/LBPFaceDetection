@@ -1,1 +1,1 @@
-# ViolaJonesC
+# LBPFaceDetection
