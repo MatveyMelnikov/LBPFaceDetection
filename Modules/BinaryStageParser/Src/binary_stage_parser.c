@@ -24,11 +24,11 @@ const stage *binary_stage_create(uint8_t *const source, uint8_t stages_amount)
 
 	for (uint8_t i = 0; i < stages_amount; i++)
 	{
-		stage* stage = binary_stage_get(i);
+		stage* current_stage = binary_stage_get(i);
 
-		stage->features = (lbp_feature*)GET_ABSOLUTE_ADDRESS(
+		current_stage->features = (lbp_feature*)GET_ABSOLUTE_ADDRESS(
 			binary_source,
-			stage->features
+			current_stage->features
 		);
 	}
 

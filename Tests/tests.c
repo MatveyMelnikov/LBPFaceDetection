@@ -8,11 +8,12 @@ static void run_all_tests()
 {
 	RUN_TEST_GROUP(integral_image);
   RUN_TEST_GROUP(binary_stage_parser);
+  RUN_TEST_GROUP(lbp_feature_test);
 }
 
 int main(int argc, char *argv[])
 {
-	return UnityMain(argc, argv, run_all_tests);
+	return UnityMain(argc, (char **)argv, run_all_tests);
 }
 
 void unity_config_put_c(uint8_t c)

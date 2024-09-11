@@ -6,7 +6,7 @@
 
 int main()
 {
-  printf("ViolaJonesC\n");
+  printf("LBP Face Detection\n");
 
   int width, height, bpp;
   uint8_t* rgb_image = stbi_load("../../Data/test.jpg", &width, &height, &bpp, 3);

@@ -1,5 +1,6 @@
 #include "unity_fixture.h"
 #include "binary_stage_parser.h"
+#include "binary_stage_parser_defs.h"
 #include "lbp_feature.h"
 #include "stage.h"
 #include <string.h>
