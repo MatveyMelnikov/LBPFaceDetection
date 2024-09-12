@@ -9,6 +9,7 @@ static void run_all_tests()
 	RUN_TEST_GROUP(integral_image);
   RUN_TEST_GROUP(binary_stage_parser);
   RUN_TEST_GROUP(lbp_feature_test);
+  RUN_TEST_GROUP(stage_test);
 }
 
 int main(int argc, char *argv[])

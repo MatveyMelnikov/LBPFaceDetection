@@ -52,7 +52,6 @@ TEST_TEAR_DOWN(stage_test)
 {
   free(test_stage.features);
 
-  stage_destroy(&test_stage);
   stage_reset_feature_handler();
 
   mock_lbp_feature_verify_complete();
@@ -70,14 +69,14 @@ TEST(stage_test, calculate_scaled_features_is_ok)
 
 TEST(stage_test, destroy_features_is_ok)
 {
-  mock_lbp_feature_destroy();
-  mock_lbp_feature_destroy();
-  mock_lbp_feature_destroy();
+  mock_lbp_feature_expect_destroy_feature();
+  mock_lbp_feature_expect_destroy_feature();
+  mock_lbp_feature_expect_destroy_feature();
 
   stage_destroy(&test_stage);
 }
 
-TEST(stage_test, calculate_vote_is_ok)
+TEST(stage_test, calculate_vote_is_true)
 {
   float lbp_votes[3] = { 1.f, 2.f, 3.f };
 
@@ -90,3 +89,18 @@ TEST(stage_test, calculate_vote_is_ok)
 
   TEST_ASSERT_EQUAL(true, result);
 }
+
+TEST(stage_test, calculate_vote_is_false)
+{
+  float lbp_votes[3] = { 0.5f, 1.f, 2.5f };
+
+  mock_lbp_feature_expect_calculate_vote(&lbp_votes[0]);
+  mock_lbp_feature_expect_calculate_vote(&lbp_votes[1]);
+  mock_lbp_feature_expect_calculate_vote(&lbp_votes[2]);
+
+  lbp_feature_arguments arguments = { 0 };
+  bool result = stage_calculate_prediction(&test_stage, &arguments);
+
+  TEST_ASSERT_EQUAL(false, result);
+}
+
