@@ -5,7 +5,16 @@
 
 enum {
   LBP_FEATURE_RECTANGLES_AMOUNT = 9U,
-  LBP_FEATURE_MASKS_AMOUNT = 8U
+  LBP_FEATURE_MASKS_AMOUNT = 8U,
+  LBP_FEATURE_RECT_UP_LEFT = 0U,
+  LBP_FEATURE_RECT_UP_CENTER = 1U,
+  LBP_FEATURE_RECT_UP_RIGHT = 2U,
+  LBP_FEATURE_RECT_LEFT = 3U,
+  LBP_FEATURE_RECT_CENTER = 4U,
+  LBP_FEATURE_RECT_RIGHT = 5U,
+  LBP_FEATURE_RECT_DOWN_LEFT = 6U,
+  LBP_FEATURE_RECT_DOWN_CENTER = 7U,
+  LBP_FEATURE_RECT_DOWN_RIGHT = 8U
 };
 
 typedef struct
@@ -20,7 +29,7 @@ typedef struct
 {
   uint8_t offset_x;
   uint8_t offset_y;
-  float scale_index;
+  uint8_t scale_index;
 } lbp_feature_arguments;
 
 typedef struct
@@ -34,5 +43,13 @@ typedef struct
 	float left_value;
 	float right_value;
 } lbp_feature;
+
+typedef struct
+{
+  uint16_t (*get_rectangle_summarize)(
+    const lbp_feature_rectangle *const
+  );
+} lbp_feature_integral_image_handler;
+
 
 #endif

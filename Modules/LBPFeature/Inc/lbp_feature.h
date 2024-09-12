@@ -3,6 +3,10 @@
 
 #include "lbp_feature_defs.h"
 
+void lbp_feature_set_integral_image_handler(
+  lbp_feature_integral_image_handler handler
+);
+void lbp_feature_reset_integral_image_handler(void);
 void lbp_feature_generate_scaled_rectangles(
   lbp_feature *const self,
   const float *const scales,

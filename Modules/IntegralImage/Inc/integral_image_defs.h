@@ -21,8 +21,8 @@ typedef struct
 
 typedef struct
 {
-	uint16_t x;
-	uint16_t y;
+	uint8_t x;
+	uint8_t y;
 } integral_image_position;
 
 typedef struct

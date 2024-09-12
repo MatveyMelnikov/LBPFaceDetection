@@ -13,7 +13,7 @@ static void run_all_tests()
 
 int main(int argc, char *argv[])
 {
-	return UnityMain(argc, (char **)argv, run_all_tests);
+	return UnityMain(argc, (const char**)argv, run_all_tests);
 }
 
 void unity_config_put_c(uint8_t c)
