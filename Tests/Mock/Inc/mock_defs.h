@@ -13,9 +13,11 @@ typedef struct
 typedef enum
 {
   READ,
-  START_CAPTURE,
   ACTIVE,
   INACTIVE,
+  GENERATE,
+  DESTROY,
+  CALCULATE,
   NO_EXPECTED_VALUE = -1
 } expectation_type;
 

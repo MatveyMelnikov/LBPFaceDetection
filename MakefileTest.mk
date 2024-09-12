@@ -7,6 +7,7 @@ UNITY_DIR = Modules/Unity-2.5.2
 INTEGRAL_IMAGE_TESTS = $(TESTS_DIR)/Modules/IntegralImage
 BINARY_STAGE_PARSER_TESTS = $(TESTS_DIR)/Modules/BinaryStageParser
 LBP_FEATURE_TESTS = $(TESTS_DIR)/Modules/LBPFeature
+STAGE_TESTS = $(TESTS_DIR)/Modules/Stage
 
 BUILD_DIR = $(UNITY_DIR)/build
 TARGET = $(BUILD_DIR)/tests.out
@@ -29,6 +30,9 @@ $(BINARY_STAGE_PARSER_TESTS)/binary_stage_parser_test_runner.c \
 $(BINARY_STAGE_PARSER_TESTS)/binary_stage_parser_test.c \
 $(LBP_FEATURE_TESTS)/lbp_feature_test_runner.c \
 $(LBP_FEATURE_TESTS)/lbp_feature_test.c \
-$(MOCK_DIR)/Src/mock_integral_image.c
+$(STAGE_TESTS)/stage_test_runner.c \
+$(STAGE_TESTS)/stage_test.c \
+$(MOCK_DIR)/Src/mock_integral_image.c \
+$(MOCK_DIR)/Src/mock_lbp_feature.c
 
 include MakefileFinal.mk
