@@ -31,7 +31,7 @@ static inline uint8_t lbp_feature_get_lbp_value(
   const lbp_feature_rectangle *const scaled_rectangles,
   uint8_t rectangle_index,
   const lbp_feature_arguments *const arguments,
-  const uint8_t center_value,
+  const uint16_t center_value,
   const uint8_t success_value
 );
 
@@ -196,7 +196,7 @@ static inline uint8_t lbp_feature_get_lbp_value(
   const lbp_feature_rectangle *const scaled_rectangles,
   uint8_t rectangle_index,
   const lbp_feature_arguments *const arguments,
-  const uint8_t center_value,
+  const uint16_t center_value,
   const uint8_t success_value
 )
 {

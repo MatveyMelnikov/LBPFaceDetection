@@ -156,3 +156,32 @@ TEST(lbp_feature_test, calculate_vote_right_value_returned)
 
   TEST_ASSERT_EQUAL_FLOAT(feature.right_value, result);
 }
+
+TEST(lbp_feature_test, calculate_vote_left_value_returned)
+{
+  uint16_t summarize_region_values[9] = {
+    947, 887, 849, 787, 934, 936, 898, 960, 988
+  };
+
+  for (
+    uint8_t i = 0;
+    i < GET_ARRAY_SIZE(summarize_region_values);
+    i++
+  )
+  {
+    mock_integral_image_expect_read_then_return(
+      (uint16_t*)&summarize_region_values[i]
+    );
+  }
+
+  lbp_feature_generate_scaled_rectangles(
+    &feature,
+    (float*)scales,
+    SCALES_AMOUNT
+  );
+
+  lbp_feature_arguments vote_arguments = (lbp_feature_arguments) { 0 };
+  float result =  lbp_feature_calculate_vote(&feature, &vote_arguments);
+
+  TEST_ASSERT_EQUAL_FLOAT(feature.left_value, result);
+}
