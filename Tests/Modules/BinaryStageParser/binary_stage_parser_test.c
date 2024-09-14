@@ -120,13 +120,14 @@ TEST_SETUP(binary_stage_parser)
     sizeof(data_features)
   );
 
-  parsed_stages = (stage*)binary_stage_create(binary_data, STAGES_AMOUNT);
+  parsed_stages = (stage*)binary_stage_parser_create(
+    binary_data,
+    STAGES_AMOUNT
+  );
 }
 
 TEST_TEAR_DOWN(binary_stage_parser)
 {
-  // integral_image_destroy();
-  binary_stage_destroy();
   free(binary_data);
   binary_data = NULL;
   parsed_stages = NULL;

@@ -5,8 +5,9 @@
 #include "stage_defs.h"
 #include "lbp_feature.h"
 
-const stage *binary_stage_create(uint8_t *const source, uint8_t stages_amount);
-void binary_stage_destroy(void);
-stage *const binary_stage_get(uint8_t index);
+const stage *binary_stage_parser_create(
+  uint8_t *const source,
+  uint8_t stages_amount
+);
 
 #endif
