@@ -33,6 +33,7 @@ $(LBP_FEATURE_TESTS)/lbp_feature_test.c \
 $(STAGE_TESTS)/stage_test_runner.c \
 $(STAGE_TESTS)/stage_test.c \
 $(MOCK_DIR)/Src/mock_integral_image.c \
-$(MOCK_DIR)/Src/mock_lbp_feature.c
+$(MOCK_DIR)/Src/mock_lbp_feature.c \
+$(MOCK_DIR)/Src/mock.c
 
 include MakefileFinal.mk
