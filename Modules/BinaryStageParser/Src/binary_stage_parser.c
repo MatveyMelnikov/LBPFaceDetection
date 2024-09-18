@@ -11,7 +11,7 @@
 
 // Implementations -----------------------------------------------------------
 
-const stage *binary_stage_parser_create(
+stage *const binary_stage_parser_create(
   uint8_t *const source,
   uint8_t stages_amount
 )
@@ -26,5 +26,5 @@ const stage *binary_stage_parser_create(
 		);
 	}
 
-	return (const stage*)source;
+	return (stage*)source;
 }

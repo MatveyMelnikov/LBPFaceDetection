@@ -2,10 +2,14 @@
 #define FACE_DETECTOR_DEFS_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "area.h"
+#include "stage_defs.h"
 
 enum {
   FACE_DETECTOR_SCALES_MIN_ARRAY_SIZE = 10U,
-  FACE_DETECTOR_FEATURE_SIZE = 24U
+  FACE_DETECTOR_FEATURE_SIZE = 24U,
+  FACE_DETECTOR_MAX_FACE_AREAS = 40U
 };
 
 typedef struct
@@ -16,8 +20,30 @@ typedef struct
   float base_scale;
   float scale_increment;
   float position_increment;
-  uint8_t min_neighbors;
+  uint8_t min_neighbours;
 } face_detector_arguments;
 
+typedef struct
+{
+  const area *const faces;
+  const uint8_t faces_amount;
+} face_detector_result;
+
+typedef struct
+{
+  // source, stages_amount
+  stage *const (*create_stage_from_source)(const uint8_t *const, uint8_t);
+  // self, scales, scales_amount
+  void (*calculate_scaled_features)(
+    stage *const,
+    const float *const,
+    const uint8_t
+  );
+  // self, arguments
+  bool (*calculate_prediction)(
+    stage *const,
+    const lbp_feature_arguments *const
+  );
+} face_detector_stage_handler;
 
 #endif

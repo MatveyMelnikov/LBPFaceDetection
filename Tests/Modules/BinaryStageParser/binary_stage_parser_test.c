@@ -83,7 +83,7 @@ static stage data_stages[STAGES_AMOUNT] = {
 };
 
 static uint8_t *binary_data = NULL;
-static const stage *parsed_stages = NULL; 
+static stage *parsed_stages = NULL; 
 
 // Static functions ----------------------------------------------------------
 

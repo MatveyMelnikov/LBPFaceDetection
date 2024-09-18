@@ -6,11 +6,13 @@
 
 void face_detector_create(
   const uint8_t *const binary_classifiers_source,
-  const uint8_t stages_amount
+  const uint8_t stages_amount,
+  face_detector_stage_handler handler
 );
 void face_detector_destroy(void);
-area *const face_detector_detect(
+void face_detector_detect(
   const face_detector_arguments *const arguments
 );
+face_detector_result face_detector_get_result(void);
 
 #endif
