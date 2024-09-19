@@ -8,6 +8,7 @@ INTEGRAL_IMAGE_TESTS = $(TESTS_DIR)/Modules/IntegralImage
 BINARY_STAGE_PARSER_TESTS = $(TESTS_DIR)/Modules/BinaryStageParser
 LBP_FEATURE_TESTS = $(TESTS_DIR)/Modules/LBPFeature
 STAGE_TESTS = $(TESTS_DIR)/Modules/Stage
+FACE_DETECTOR_TESTS = $(TESTS_DIR)/Modules/FaceDetector
 
 BUILD_DIR = $(UNITY_DIR)/build
 TARGET = $(BUILD_DIR)/tests.out
@@ -32,8 +33,11 @@ $(LBP_FEATURE_TESTS)/lbp_feature_test_runner.c \
 $(LBP_FEATURE_TESTS)/lbp_feature_test.c \
 $(STAGE_TESTS)/stage_test_runner.c \
 $(STAGE_TESTS)/stage_test.c \
+$(FACE_DETECTOR_TESTS)/face_detector_test_runner.c \
+$(FACE_DETECTOR_TESTS)/face_detector_test.c \
 $(MOCK_DIR)/Src/mock_integral_image.c \
 $(MOCK_DIR)/Src/mock_lbp_feature.c \
+$(MOCK_DIR)/Src/mock_stage.c \
 $(MOCK_DIR)/Src/mock.c
 
 include MakefileFinal.mk

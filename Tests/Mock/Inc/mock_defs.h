@@ -18,7 +18,10 @@ typedef enum
   GENERATE,
   DESTROY,
   CALCULATE,
+  CREATE,
   NO_EXPECTED_VALUE = -1
 } expectation_type;
+
+#define UNUSED(n) (void)(n)
 
 #endif

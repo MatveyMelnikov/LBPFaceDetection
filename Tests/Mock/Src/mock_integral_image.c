@@ -24,7 +24,7 @@ void mock_integral_image_expect_read_then_return(
   const uint16_t *const data
 )
 {
-  mock_record_expectation(READ, data, sizeof(uint16_t));
+  mock_record_expectation(READ, (uint8_t*)data, sizeof(uint16_t));
 }
 
 void mock_integral_image_verify_complete()

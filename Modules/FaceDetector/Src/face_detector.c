@@ -17,7 +17,7 @@
 static face_detector_stage_handler stage_handler; 
 static stage *stages;
 static uint8_t current_stages_amount;
-static float *scales;
+static float *scales = NULL;
 static uint8_t scales_amount;
 
 static area faces_areas[FACE_DETECTOR_MAX_FACE_AREAS];
@@ -27,6 +27,7 @@ static uint8_t result_faces_amount;
 
 // Static prototypes ---------------------------------------------------------
 
+static void face_detector_reset_faces_arrays(void);
 static float *face_detector_calculate_scales(
   float base_scale,
   float scale_increment,
@@ -44,12 +45,10 @@ inline static void face_detector_detect_face_window(
 );
 static void face_detector_merge_faces_areas(uint8_t min_neighbours);
 static void face_detector_calculate_indexes_of_neighbours(
-  uint8_t *const similar_areas_indexes,
-  uint8_t *const number_of_similar_areas
+  uint8_t *const similar_areas_indexes
 );
 static void face_detector_merge_neighbours(
   uint8_t *const similar_areas_indexes,
-  const uint8_t number_of_similar_areas,
   uint8_t min_neighbours
 );
 __attribute__((always_inline))
@@ -57,6 +56,7 @@ inline static area face_detector_combine_neighbours(
   const uint8_t *const indexes,
   const uint8_t amount
 );
+static void face_detector_free_scales(void);
 
 // Implementations -----------------------------------------------------------
 
@@ -78,7 +78,8 @@ void face_detector_create(
 void face_detector_destroy()
 {
   stage_handler = (face_detector_stage_handler) { 0 };
-  free(scales);
+  face_detector_free_scales();
+  face_detector_reset_faces_arrays();
   scales_amount = 0;
   current_stages_amount = 0;
 }
@@ -87,6 +88,8 @@ void face_detector_detect(
   const face_detector_arguments *const arguments
 )
 {
+  face_detector_reset_faces_arrays();
+
   face_detector_calculate_scales(
     arguments->base_scale,
     arguments->scale_increment,
@@ -98,8 +101,14 @@ void face_detector_detect(
   face_detector_detect_faces(arguments);
   face_detector_merge_faces_areas(arguments->min_neighbours);
 
-  free(scales);
+  face_detector_free_scales();
   integral_image_destroy();
+}
+
+static void face_detector_reset_faces_arrays()
+{
+  faces_amount = 0;
+  result_faces_amount = 0;
 }
 
 static float *face_detector_calculate_scales(
@@ -150,7 +159,7 @@ static void face_detector_detect_faces(
   for (uint8_t scale_index = 0; scale_index < scales_amount; scale_index++)
   {
     uint8_t feature_size = scales[scale_index] * FACE_DETECTOR_FEATURE_SIZE;
-    uint8_t step = scales[scale_index] * arguments->position_increment;
+    uint8_t step = feature_size * arguments->position_increment;
     feature_arguments.scale_index = scale_index;
 
     for (
@@ -202,24 +211,22 @@ inline static void face_detector_detect_face_window(
 static void face_detector_merge_faces_areas(uint8_t min_neighbours)
 {
   uint8_t similar_areas_indexes[FACE_DETECTOR_MAX_FACE_AREAS] = { 0 };
-  uint8_t number_of_similar_areas = 0;
   
   face_detector_calculate_indexes_of_neighbours(
-    similar_areas_indexes,
-    &number_of_similar_areas
+    similar_areas_indexes
   );
   face_detector_merge_neighbours(
     similar_areas_indexes,
-    number_of_similar_areas,
     min_neighbours
   );
 }
 
 static void face_detector_calculate_indexes_of_neighbours(
-  uint8_t *const similar_areas_indexes,
-  uint8_t *const number_of_similar_areas
+  uint8_t *const similar_areas_indexes
 )
 {
+  uint8_t number_of_similar_areas = 0;
+
   for (
     uint8_t area_index = 0;
     area_index < faces_amount;
@@ -247,19 +254,15 @@ static void face_detector_calculate_indexes_of_neighbours(
           similar_areas_indexes[comparable_read_index];
         break;
       }
-
-      if (!found)
-      {
-        similar_areas_indexes[area_index] = *number_of_similar_areas;
-        (*number_of_similar_areas)++;
-      }
     }
+
+    if (!found)
+      similar_areas_indexes[area_index] = number_of_similar_areas++;
   }
 }
 
 static void face_detector_merge_neighbours(
   uint8_t *const similar_areas_indexes,
-  const uint8_t number_of_similar_areas,
   uint8_t min_neighbours
 )
 {
@@ -275,7 +278,7 @@ static void face_detector_merge_neighbours(
     
     for (
       int8_t comparable_area_index = 0;
-      comparable_area_index < number_of_similar_areas;
+      comparable_area_index < faces_amount;
       comparable_area_index++
     )
     {
@@ -320,6 +323,16 @@ inline static area face_detector_combine_neighbours(
   result.size /= amount;
 
   return result;
+}
+
+static void face_detector_free_scales()
+{
+  if (scales == NULL)
+    return;
+
+  free(scales);
+  scales = NULL;
+  scales_amount = 0;
 }
 
 face_detector_result face_detector_get_result(void)
