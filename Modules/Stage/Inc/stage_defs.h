@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "lbp_feature_defs.h"
 
+#define STAGE_EPSILON 0.001f
+
 typedef struct
 {
 	lbp_feature *features;

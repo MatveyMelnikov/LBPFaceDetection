@@ -52,5 +52,5 @@ bool stage_calculate_prediction(
     score += feature_handler.calculate_vote(&self->features[i], arguments);
   }
 
-  return (score >= self->threshold) ? true : false;
+  return (score >= (self->threshold - STAGE_EPSILON)) ? true : false;
 }

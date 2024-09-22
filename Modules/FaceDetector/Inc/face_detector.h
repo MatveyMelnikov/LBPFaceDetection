@@ -5,7 +5,7 @@
 #include "area.h"
 
 void face_detector_create(
-  const uint8_t *const binary_classifiers_source,
+  uint8_t *const binary_classifiers_source,
   const uint8_t stages_amount,
   face_detector_stage_handler handler
 );

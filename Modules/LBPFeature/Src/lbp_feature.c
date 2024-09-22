@@ -88,12 +88,16 @@ static void lbp_feature_allocate_scaled_rectangles(
   const uint8_t scales_amount
 )
 {
-  self->scaled_rectangles = calloc(sizeof(void*), scales_amount);
+  self->scaled_rectangles = (lbp_feature_rectangle **)calloc(
+    scales_amount,
+    sizeof(void*)
+  );
+
   for (uint8_t i = 0; i < scales_amount; i++)
   {
     self->scaled_rectangles[i] = calloc(
-      sizeof(lbp_feature_rectangle),
-      LBP_FEATURE_RECTANGLES_AMOUNT
+      LBP_FEATURE_RECTANGLES_AMOUNT,
+      sizeof(lbp_feature_rectangle)
     );
   }
 

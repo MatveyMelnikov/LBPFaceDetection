@@ -5,7 +5,7 @@
 #include "lbp_feature_defs.h"
 
 void face_detector_builder_create(
-  const uint8_t *const binary_classifiers_source,
+  uint8_t *const binary_classifiers_source,
   const uint8_t stages_amount,
   uint16_t (*get_rectangle_summarize)(
     const lbp_feature_rectangle *const feature_rectangle

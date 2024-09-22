@@ -5,11 +5,11 @@
 
 // Defines -------------------------------------------------------------------
 
-#define MAX(a, b) \
+#define MIN(a, b) \
   ({ \
     __typeof__(a) _a = (a); \
     __typeof__(b) _b = (b); \
-    (_a > _b) ? _a : _b; \
+    (_a > _b) ? _b : _a; \
   })
 
 // Static variables ----------------------------------------------------------
@@ -17,7 +17,7 @@
 static face_detector_stage_handler stage_handler; 
 static stage *stages;
 static uint8_t current_stages_amount;
-static float *scales = NULL;
+static float scales[FACE_DETECTOR_SCALES_ARRAY_SIZE];
 static uint8_t scales_amount;
 
 static area faces_areas[FACE_DETECTOR_MAX_FACE_AREAS];
@@ -56,12 +56,11 @@ inline static area face_detector_combine_neighbours(
   const uint8_t *const indexes,
   const uint8_t amount
 );
-static void face_detector_free_scales(void);
 
 // Implementations -----------------------------------------------------------
 
 void face_detector_create(
-  const uint8_t *const binary_classifiers_source,
+  uint8_t *const binary_classifiers_source,
   const uint8_t stages_amount,
   face_detector_stage_handler handler
 )
@@ -78,8 +77,9 @@ void face_detector_create(
 void face_detector_destroy()
 {
   stage_handler = (face_detector_stage_handler) { 0 };
-  face_detector_free_scales();
   face_detector_reset_faces_arrays();
+
+  scales_amount = 0;
   scales_amount = 0;
   current_stages_amount = 0;
 }
@@ -101,7 +101,7 @@ void face_detector_detect(
   face_detector_detect_faces(arguments);
   face_detector_merge_faces_areas(arguments->min_neighbours);
 
-  face_detector_free_scales();
+  scales_amount = 0;
   integral_image_destroy();
 }
 
@@ -118,22 +118,23 @@ static float *face_detector_calculate_scales(
   const uint8_t image_size_y
 )
 {
-  float max_scale = MAX(image_size_x, image_size_y) /
+  uint8_t min_image_side = MIN(image_size_x, image_size_y);
+  float max_scale = (float)MIN(min_image_side, FACE_DETECTOR_MAX_WINDOW_SIZE) /
     FACE_DETECTOR_FEATURE_SIZE;
   float current_scale = base_scale;
-  scales = calloc(FACE_DETECTOR_SCALES_ARRAY_SIZE, sizeof(float));
   scales_amount = 0;
 
-  while (scales_amount < UINT8_MAX)
+  while (scales_amount < UINT8_MAX - 1)
   {
     scales[scales_amount++] = current_scale;
     current_scale *= scale_increment;
 
     if (current_scale > max_scale)
       break;
-    if (scales_amount >= FACE_DETECTOR_SCALES_ARRAY_SIZE)
+    if (scales_amount >= FACE_DETECTOR_SCALES_ARRAY_SIZE - 1)
       break;
   }
+  scales[scales_amount++] = max_scale;
 
   return scales;
 }
@@ -210,7 +211,7 @@ inline static void face_detector_detect_face_window(
 
 static void face_detector_merge_faces_areas(uint8_t min_neighbours)
 {
-  uint8_t similar_areas_indexes[FACE_DETECTOR_MAX_FACE_AREAS] = { 0 };
+  uint8_t similar_areas_indexes[FACE_DETECTOR_MAX_FACE_AREAS];
   
   face_detector_calculate_indexes_of_neighbours(
     similar_areas_indexes
@@ -235,11 +236,10 @@ static void face_detector_calculate_indexes_of_neighbours(
   {
     bool found = false;
 
-    // The higher the index, the larger the area. We prefer large areas
     for (
-      int16_t comparable_read_index = faces_amount - 1;
-      comparable_read_index >= 0;
-      comparable_read_index--
+      uint8_t comparable_read_index = 0;
+      comparable_read_index < area_index;
+      comparable_read_index++
     )
     {
       if (
@@ -307,32 +307,24 @@ inline static area face_detector_combine_neighbours(
   const uint8_t amount
 )
 {
-  area result = { 0 };
+  uint16_t result_x = 0;
+  uint16_t result_y = 0;
+  uint16_t result_size = 0;
 
   for (uint8_t i = 0; i < amount; i++)
   {
     area current_area = faces_areas[indexes[i]];
 
-    result.x += current_area.x;
-    result.y += current_area.y;
-    result.size += current_area.size;
+    result_x += current_area.x;
+    result_y += current_area.y;
+    result_size += current_area.size;
   }
 
-  result.x /= amount;
-  result.y /= amount;
-  result.size /= amount;
-
-  return result;
-}
-
-static void face_detector_free_scales()
-{
-  if (scales == NULL)
-    return;
-
-  free(scales);
-  scales = NULL;
-  scales_amount = 0;
+  return (area) {
+    .x = result_x / amount,
+    .y = result_y / amount,
+    .size = result_size / amount
+  };
 }
 
 face_detector_result face_detector_get_result(void)

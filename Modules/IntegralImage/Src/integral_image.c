@@ -52,7 +52,7 @@ static void integral_image_fill_line(
 )
 {
   memcpy(
-    integral_image + 1 + ((line_index + 1) * image_size.height),
+    integral_image + 1 + ((line_index + 1) * image_size.width),
     image_data,
     source_image_size.width * sizeof(uint16_t)
   );
@@ -133,6 +133,8 @@ const uint16_t integral_image_get_rectangle(
 		rectangle->bottom_right_corner.y
 	);
 
-	return bottom_right_corner + top_left_corner -
+  uint16_t res = bottom_right_corner + top_left_corner -
 		top_right_corner - bottom_left_corner;
+
+	return res;
 }
