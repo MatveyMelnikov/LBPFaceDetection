@@ -7,14 +7,13 @@
 #include "stage_defs.h"
 
 enum {
-  FACE_DETECTOR_SCALES_MIN_ARRAY_SIZE = 10U,
+  FACE_DETECTOR_SCALES_ARRAY_SIZE = 40U,
   FACE_DETECTOR_FEATURE_SIZE = 24U,
   FACE_DETECTOR_MAX_FACE_AREAS = 40U
 };
 
 typedef struct
 {
-  const uint8_t *const image;
   const uint8_t image_size_x;
   const uint8_t image_size_y;
   float base_scale;
@@ -32,7 +31,7 @@ typedef struct
 typedef struct
 {
   // source, stages_amount
-  stage *const (*create_stage_from_source)(const uint8_t *const, uint8_t);
+  stage *const (*create_stage_from_source)(uint8_t *const, uint8_t);
   // self, scales, scales_amount
   void (*calculate_scaled_features)(
     stage *const,

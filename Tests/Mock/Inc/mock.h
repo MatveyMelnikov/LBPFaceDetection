@@ -1,3 +1,6 @@
+#ifndef MOCK_H
+#define MOCK_H
+
 #include "mock_defs.h"
 
 void mock_create(const char *const mock_name, const uint8_t max_expectations);
@@ -13,3 +16,5 @@ void mock_check_kind(
   int kind
 );
 void mock_verify_complete(void);
+
+#endif

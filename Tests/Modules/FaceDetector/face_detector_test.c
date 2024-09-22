@@ -75,7 +75,6 @@ TEST(face_detector, detect_with_one_window_is_ok)
     .base_scale = BASE_SCALE,
     .scale_increment = SCALE_INCREMENT,
     .position_increment = POSITION_INCREMENT,
-    .image = NULL,
     .image_size_x = FACE_DETECTOR_FEATURE_SIZE,
     .image_size_y = FACE_DETECTOR_FEATURE_SIZE,
     .min_neighbours = MIN_NEIGHBOURS
@@ -108,7 +107,6 @@ TEST(face_detector, detect_with_three_windows_is_ok)
     .base_scale = BASE_SCALE,
     .scale_increment = SCALE_INCREMENT,
     .position_increment = POSITION_INCREMENT,
-    .image = NULL,
     .image_size_x = FACE_DETECTOR_FEATURE_SIZE + 4U,
     .image_size_y = FACE_DETECTOR_FEATURE_SIZE,
     .min_neighbours = MIN_NEIGHBOURS

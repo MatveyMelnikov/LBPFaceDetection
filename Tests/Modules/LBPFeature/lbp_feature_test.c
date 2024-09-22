@@ -22,8 +22,6 @@ static float scales[SCALES_AMOUNT] = {
 
 // Static functions ----------------------------------------------------------
 
-// uint16_t (*<unnamed>::get_rectangle_summarize)(const lbp_feature_rectangle *const)
-
 static uint16_t get_rectangle_summarize(
   const lbp_feature_rectangle *const feature_rectangle
 )

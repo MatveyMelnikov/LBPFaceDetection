@@ -56,8 +56,6 @@ static void integral_image_fill_line(
     image_data,
     source_image_size.width * sizeof(uint16_t)
   );
-
-  __asm("nop");
 }
 
 void integral_image_destroy(void)

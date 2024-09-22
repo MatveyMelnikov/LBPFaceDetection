@@ -121,7 +121,7 @@ static float *face_detector_calculate_scales(
   float max_scale = MAX(image_size_x, image_size_y) /
     FACE_DETECTOR_FEATURE_SIZE;
   float current_scale = base_scale;
-  scales = calloc(FACE_DETECTOR_SCALES_MIN_ARRAY_SIZE, sizeof(float));
+  scales = calloc(FACE_DETECTOR_SCALES_ARRAY_SIZE, sizeof(float));
   scales_amount = 0;
 
   while (scales_amount < UINT8_MAX)
@@ -131,8 +131,8 @@ static float *face_detector_calculate_scales(
 
     if (current_scale > max_scale)
       break;
-    if (scales_amount % FACE_DETECTOR_SCALES_MIN_ARRAY_SIZE == 0)
-      scales = realloc(scales, scales_amount * 2);
+    if (scales_amount >= FACE_DETECTOR_SCALES_ARRAY_SIZE)
+      break;
   }
 
   return scales;
@@ -163,7 +163,7 @@ static void face_detector_detect_faces(
     feature_arguments.scale_index = scale_index;
 
     for (
-      ;
+      feature_arguments.offset_x = 0;
       feature_arguments.offset_x < 
         arguments->image_size_x - feature_size + 1;
       feature_arguments.offset_x += step
