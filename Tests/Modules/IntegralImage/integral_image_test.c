@@ -23,6 +23,7 @@ static uint8_t image[IMAGE_SIZE][IMAGE_SIZE] = {
 
 static void fill_integral_image(
   FILL_LINE_FUNCTOR,
+  const uint8_t *const source_image,
   integral_image_size image_size
 )
 {
@@ -31,7 +32,7 @@ static void fill_integral_image(
   for (uint8_t y = 0; y < image_size.height; y++)
   {
     for (uint8_t x = 0; x < image_size.width; x++)
-      convertion_buffer[x] = image[y][x];
+      convertion_buffer[x] = *(source_image + x + (y * image_size.width));
 
     fill_line((uint16_t*)convertion_buffer, y);
   }
@@ -47,10 +48,11 @@ TEST_SETUP(integral_image)
     (integral_image_size) {
       .width = 6U,
       .height = 6U
-    }
+    },
+    fill_integral_image
   );
 
-  integral_image_set(fill_integral_image);
+  integral_image_set((uint8_t*)image);
 }
 
 TEST_TEAR_DOWN(integral_image)

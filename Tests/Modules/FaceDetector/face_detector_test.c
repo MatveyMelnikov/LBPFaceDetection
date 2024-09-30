@@ -103,11 +103,13 @@ TEST(face_detector, detect_with_one_window_is_ok)
 
 TEST(face_detector, detect_with_three_windows_is_ok)
 {
+  uint8_t two_steps = 2.f * FACE_DETECTOR_FEATURE_SIZE * POSITION_INCREMENT;
+
   face_detector_arguments arguments = (face_detector_arguments) {
     .base_scale = BASE_SCALE,
     .scale_increment = SCALE_INCREMENT,
     .position_increment = POSITION_INCREMENT,
-    .image_size_x = FACE_DETECTOR_FEATURE_SIZE + 4U,
+    .image_size_x = FACE_DETECTOR_FEATURE_SIZE + two_steps,
     .image_size_y = FACE_DETECTOR_FEATURE_SIZE,
     .min_neighbours = MIN_NEIGHBOURS
   };
@@ -115,7 +117,8 @@ TEST(face_detector, detect_with_three_windows_is_ok)
     true, true, true, true, true, true, true, true, true
   };
   area expected_result = (area) {
-    .x = 2,
+    // Average between three positions
+    .x = (3.f * FACE_DETECTOR_FEATURE_SIZE * POSITION_INCREMENT) / 3.f,
     .y = 0,
     .size = FACE_DETECTOR_FEATURE_SIZE
   };

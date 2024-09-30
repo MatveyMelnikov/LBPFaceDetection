@@ -40,8 +40,8 @@ typedef struct
 	lbp_feature_rectangle **scaled_rectangles;
   uint8_t scaled_rectangles_amount;
 	int32_t masks[LBP_FEATURE_MASKS_AMOUNT];
-	float left_value;
-	float right_value;
+	int16_t left_value;
+	int16_t right_value;
 } lbp_feature;
 
 typedef struct

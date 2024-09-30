@@ -4,13 +4,15 @@
 #include <stdint.h>
 #include "lbp_feature_defs.h"
 
-#define STAGE_EPSILON 0.001f
+enum {
+  STAGE_EPSILON = 1
+};
 
 typedef struct
 {
 	lbp_feature *features;
 	uint8_t features_amount;
-	float threshold;
+	int16_t threshold;
 } stage;
 
 typedef struct

@@ -9,6 +9,11 @@
 static uint16_t *integral_image = NULL;
 static integral_image_size image_size = { 0 };
 static integral_image_size source_image_size = { 0 };
+static void (*fill_image)(
+  FILL_LINE_FUNCTOR,
+  const uint8_t *const,
+  integral_image_size
+);
 
 // Defines -------------------------------------------------------------------
 
@@ -28,7 +33,7 @@ static void integral_image_calculate_other_elements(void);
 
 // Implementations -----------------------------------------------------------
 
-void integral_image_create(integral_image_size size)
+void integral_image_create(integral_image_size size, FILL_IMAGE_FUNCTOR)
 {
   image_size = (integral_image_size) {
     .height = size.height + 1,
@@ -39,11 +44,12 @@ void integral_image_create(integral_image_size size)
   integral_image = (uint16_t*)malloc(
     (image_size.width * image_size.height) * sizeof(uint16_t)
   );
+  fill_image = fill_integral_image_line;
 }
 
-void integral_image_set(FILL_IMAGE_FUNCTOR)
+void integral_image_set(const uint8_t *const image)
 {
-  fill_integral_image_line(integral_image_fill_line, source_image_size);
+  fill_image(integral_image_fill_line, image, source_image_size);
 }
 
 static void integral_image_fill_line(

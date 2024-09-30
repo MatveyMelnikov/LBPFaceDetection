@@ -10,6 +10,7 @@
   )
 #define FILL_IMAGE_FUNCTOR void (*fill_integral_image_line)( \
     FILL_LINE_FUNCTOR, \
+    const uint8_t *const, \
     integral_image_size \
   )
 

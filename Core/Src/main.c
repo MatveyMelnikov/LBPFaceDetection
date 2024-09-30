@@ -34,9 +34,15 @@ static bool open_classifier(
 );
 static void fill_integral_image(
   FILL_LINE_FUNCTOR,
+  const uint8_t *const source_image,
   integral_image_size image_size
 );
-static uint16_t rgb_to_greyscale(uint8_t x, uint8_t y, uint8_t image_width);
+static uint16_t rgb_to_greyscale(
+  uint8_t x,
+  uint8_t y,
+  const uint8_t *const source_image,
+  uint8_t image_width
+);
 static uint16_t get_rectangle_summarize(
   const lbp_feature_rectangle *const feature_rectangle
 );
@@ -48,11 +54,11 @@ int main()
   printf("LBP Face Detection\n");
 
   int width, height, bpp;
-  if (!open_image("../../Data/test_45_window.jpg", &width, &height))
+  if (!open_image("../../Data/test_0.jpg", &width, &height))
     return - 1;
   if (
     !open_classifier(
-      "../../Data/lbpcascade_frontalface_improved.bin",
+      "../../Data/lbpcascade_frontalface_improved_integer.bin",
       IMPROVED_BINARY_DATA_SIZE
     )
   )
@@ -62,9 +68,10 @@ int main()
     (integral_image_size) {
       .width = width,
       .height = height
-    }
+    },
+    fill_integral_image
   );
-  integral_image_set(fill_integral_image);
+  integral_image_set(image);
   integral_image_calculate();
 
   face_detector_arguments arguments = (face_detector_arguments) {
@@ -146,6 +153,7 @@ static bool open_classifier(
 
 static void fill_integral_image(
   FILL_LINE_FUNCTOR,
+  const uint8_t *const source_image,
   integral_image_size image_size
 )
 {
@@ -155,7 +163,7 @@ static void fill_integral_image(
   {
     for (uint8_t x = 0; x < image_size.width; x++)
       convertion_buffer[x] = APPLY_ROUNDING(
-        rgb_to_greyscale(x, y, image_size.width)
+        rgb_to_greyscale(x, y, source_image, image_size.width)
       );
 
     fill_line(convertion_buffer, y);
@@ -164,9 +172,14 @@ static void fill_integral_image(
   free(convertion_buffer);
 }
 
-static uint16_t rgb_to_greyscale(uint8_t x, uint8_t y, uint8_t image_width)
+static uint16_t rgb_to_greyscale(
+  uint8_t x,
+  uint8_t y,
+  const uint8_t *const source_image,
+  uint8_t image_width
+)
 {
-  const uint8_t *rgb_pixel = GET_RGB_PIXEL(image, x, y, image_width);
+  const uint8_t *rgb_pixel = GET_RGB_PIXEL(source_image, x, y, image_width);
 
   return 0.3f * rgb_pixel[0] + 0.59f * rgb_pixel[1] +
     0.11f * rgb_pixel[2];

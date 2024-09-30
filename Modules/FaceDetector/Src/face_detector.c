@@ -126,11 +126,13 @@ static float *face_detector_calculate_scales(
 
   while (scales_amount < UINT8_MAX - 1)
   {
-    scales[scales_amount++] = current_scale;
+    scales[scales_amount] = current_scale;
     current_scale *= scale_increment;
 
-    if (current_scale > max_scale)
+    if (current_scale >= max_scale)
       break;
+    scales_amount++;
+  
     if (scales_amount >= FACE_DETECTOR_SCALES_ARRAY_SIZE - 1)
       break;
   }
@@ -194,9 +196,7 @@ inline static void face_detector_detect_face_window(
     if (
       !stage_handler.calculate_prediction(&stages[i], feature_arguments)
     )
-    {
       return;
-    }
   }
 
   if (faces_amount >= FACE_DETECTOR_MAX_FACE_AREAS)
